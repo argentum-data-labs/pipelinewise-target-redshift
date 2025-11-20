@@ -19,6 +19,8 @@ from itertools import islice
 
 from target_redshift.db_sync import DbSync
 
+__version__ = '1.6.0'
+
 LOGGER = get_logger('target_redshift')
 
 DEFAULT_BATCH_SIZE_ROWS = 100000
@@ -432,6 +434,7 @@ def flush_records(stream, records_to_load, row_count, db_sync, compression=None,
 def main():
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('-c', '--config', help='Config file')
+    arg_parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
     args = arg_parser.parse_args()
 
     if args.config:

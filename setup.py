@@ -1,12 +1,17 @@
 #!/usr/bin/env python
 
 from setuptools import setup
+import re
 
 with open('README.md') as f:
     long_description = f.read()
 
+# Read version from target_redshift/__init__.py
+with open('target_redshift/__init__.py') as f:
+    version = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", f.read(), re.M).group(1)
+
 setup(name="pipelinewise-target-redshift",
-      version="1.6.0",
+      version=version,
       description="Singer.io target for loading data to Amazon Redshift - PipelineWise compatible",
       long_description=long_description,
       long_description_content_type='text/markdown',
