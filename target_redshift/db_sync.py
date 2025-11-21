@@ -51,7 +51,11 @@ def column_type(schema_property, with_length=True):
     varchar_length = DEFAULT_VARCHAR_LENGTH
     if schema_property.get('maxLength', 0) > varchar_length:
         varchar_length = LONG_VARCHAR_LENGTH
-    if 'object' in property_type or 'array' in property_type:
+
+    # Check for explicit SUPER type marker (in type field or format field)
+    if 'super' in property_type or property_format == 'super':
+        column_type = 'super'
+    elif 'object' in property_type or 'array' in property_type:
         column_type = 'character varying'
         varchar_length = LONG_VARCHAR_LENGTH
 
@@ -84,8 +88,13 @@ def column_type(schema_property, with_length=True):
 
 def column_trans(schema_property):
     property_type = schema_property['type']
+    property_format = schema_property['format'] if 'format' in schema_property else None
     column_trans = ''
-    if 'object' in property_type or 'array' in property_type:
+
+    # SUPER type doesn't need parse_json transformation
+    if 'super' in property_type or property_format == 'super':
+        column_trans = ''
+    elif 'object' in property_type or 'array' in property_type:
         column_trans = 'parse_json'
 
     return column_trans

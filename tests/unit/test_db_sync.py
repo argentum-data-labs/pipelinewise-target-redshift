@@ -72,7 +72,11 @@ class TestTargetRedshift(object):
         json_bool =         {"type": ["boolean"]            }
         json_obj =          {"type": ["object"]             }
         json_arr =          {"type": ["array"]              }
-        
+        json_super =        {"type": "super"                }
+        json_super_list =   {"type": ["super"]              }
+        json_super_null =   {"type": ["super", "null"]      }
+        json_obj_super =    {"type": ["object"]             , "format": "super"}
+
         # Mapping from JSON schema types ot Redshift column types
         assert mapper(json_str)          == 'character varying(10000)'
         assert mapper(json_str_or_null)  == 'character varying(10000)'
@@ -86,6 +90,37 @@ class TestTargetRedshift(object):
         assert mapper(json_bool)         == 'boolean'
         assert mapper(json_obj)          == 'character varying(65535)'
         assert mapper(json_arr)          == 'character varying(65535)'
+        assert mapper(json_super)        == 'super'
+        assert mapper(json_super_list)   == 'super'
+        assert mapper(json_super_null)   == 'super'
+        assert mapper(json_obj_super)    == 'super'
+
+
+    def test_column_trans_mapping(self):
+        """Test column transformation function mappings"""
+        trans_mapper = target_redshift.db_sync.column_trans
+
+        # Test object and array types get parse_json
+        json_obj = {"type": ["object"]}
+        json_arr = {"type": ["array"]}
+        assert trans_mapper(json_obj) == 'parse_json'
+        assert trans_mapper(json_arr) == 'parse_json'
+
+        # Test SUPER types don't get parse_json
+        json_super = {"type": "super"}
+        json_super_list = {"type": ["super"]}
+        json_super_null = {"type": ["super", "null"]}
+        json_obj_super = {"type": ["object"], "format": "super"}
+        assert trans_mapper(json_super) == ''
+        assert trans_mapper(json_super_list) == ''
+        assert trans_mapper(json_super_null) == ''
+        assert trans_mapper(json_obj_super) == ''
+
+        # Test other types don't get transformation
+        json_str = {"type": ["string"]}
+        json_int = {"type": ["integer"]}
+        assert trans_mapper(json_str) == ''
+        assert trans_mapper(json_int) == ''
 
 
     def test_stream_name_to_dict(self):
