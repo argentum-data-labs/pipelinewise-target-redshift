@@ -8,6 +8,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 .virtualenvs
+.venv/
 *.egg-info/
 dist/
 .coverage
@@ -32,3 +33,17 @@ tmp
 # Docs
 docs/_build/
 docs/_templates/
+
+# AI Code Assistants
+.ai/
+.aiconfig
+.aider*
+.claude/
+.codeium/
+.continue/
+.copilot/
+.cursor/
+.github-copilot/
+.gpteng/
+.tabnine/
+*.aider.chat.history.md
